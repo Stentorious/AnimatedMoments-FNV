@@ -1,0 +1,4 @@
+begin Function {}
+	SetUIFloatAlt "HUDMainMenu\visible" 1
+	EnablePlayerControlsAltEx (AuxVarGetFlt (Goo1.AuxVarGetStr "*AnimMoment" 1) 3 (Goo1.AuxVarGetRef "*AnimMoment" 0))
+end

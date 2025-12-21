@@ -1,0 +1,6 @@
+ref rQuest
+int iStage
+
+begin Function {rQuest, iStage}
+	Call (CompileScript "AnimatedMoments\PlayAnim.gek") rQuest ("*AnimMomentTrigger_" + $iStage)
+end

@@ -1,0 +1,9 @@
+[
+	{
+		"imod" : [ "NVEyeAdjustISFX", "DEMOEyeAdjustISFX" ],
+		"animPath" : "Hitman/VaultExit.kf",
+		"animDelay" : 0.5,
+		"hideHUD": 1,
+		"disableControlFlags" : 32148
+	}
+]

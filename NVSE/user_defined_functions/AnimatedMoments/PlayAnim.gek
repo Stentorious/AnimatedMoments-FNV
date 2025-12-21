@@ -1,0 +1,29 @@
+ref rRef
+string_var sAux
+
+begin Function {rRef, sAux}
+
+	; Cache moment aux
+	Goo1.AuxVarSetRef "*AnimMoment" rRef 0
+	Goo1.AuxVarSetStr "*AnimMoment" (sAux) 1
+
+	; Disable HUD
+	if eval AuxVarGetFlt (sAux) 2 rRef
+		CallAfter 0 ({} => SetUIFloatAlt "HUDMainMenu\visible" 0)
+	endif
+
+	; Disable player controls
+	if GSIV 0 > 0
+		SetSmoothIronsightsValue 0 0
+	endif
+	if eval AuxVarGetFlt (sAux) 3 rRef > 0
+		DisablePlayerControlsAltEx (AuxVarGetFlt (sAux) 3 rRef)
+	endif
+
+	; Queue animations
+	CallAfter (AuxVarGetFlt (sAux) 1 rRef) (begin function {}
+		Player.PlayAnimationPath ("AnimatedMoments\" + (AuxVarGetStr (Goo1.AuxVarGetStr "*AnimMoment" 1) 0 (Goo1.AuxVarGetRef "*AnimMoment" 0))) 1
+		CallWhen (CompileScript "AnimatedMoments\AnimReset.gek") ({} => Player.IsAnimSequencePlaying ("AnimatedMoments\" + (AuxVarGetStr (Goo1.AuxVarGetStr "*AnimMoment" 1) 0 (Goo1.AuxVarGetRef "*AnimMoment" 0))) == 0) 20
+	end)
+
+end

@@ -1,0 +1,115 @@
+; Animated Moments - Stentorious + Hitman
+
+; Check for requirements
+if eval GetNVSEVersion < 6 || (GetNVSEVersion == 6 && GetNVSERevision < 4)
+	MessageBoxEx "Animated Moments missing requirement!%rInstall xNVSE 6.4.0+."
+	return
+endif
+if GetPluginVersion "JohnnyGuitarNVSE" < 390
+	MessageBoxEx "Animated Moments missing requirement!%rInstall latest JohnnyGuitar NVSE plugin."
+	return
+endif
+if GetPluginVersion "ShowOffNVSE Plugin" < 181
+	MessageBoxEx "Animated Moments missing requirement!%rInstall latest ShowOff NVSE plugin."
+	return
+endif
+if GetPluginVersion "kNVSE" < 37
+	MessageBoxEx "Animated Moments missing requirement!%rInstall latest kNVSE plugin."
+	return
+endif
+if GetPluginVersion "lStewieAl's Tweaks" < 906
+	MessageBoxEx "Animated Moments missing requirement!%rInstall latest lStewieAl's Tweaks."
+	return
+endif
+
+; Load anim triggers
+int iSize
+int iSizeTrigger
+int iQuestStage
+int iHideHUD
+int iDisableControlFlags
+float fAnimDelay
+ref rTemp
+array_var aJSON
+array_var aEntry
+array_var aForE1
+array_var aForE2
+string_var sJSONPath
+string_var sAnimPath
+
+array_var aFiles = GetFiles "Meshes\AnimatedMoments" "*.json"
+
+if eval (iSize = ar_Size aFiles) > 0
+	while (iSize -= 1) > -1
+		sJSONPath = sv_Construct "Data\Meshes\AnimatedMoments\%z" (aFiles[iSize])
+
+		; Check valid JSON
+		if eval TestExpr (aJSON = ReadFromJSON (sJSONPath))
+		else
+			PrintC "Animated Moments: Invalid -> %z" sJSONPath
+			continue
+		endif
+
+		; Load anim entries
+		foreach aForE1 <- aJSON
+
+			aEntry = *aForE1
+
+			if eval ar_HasKey aEntry "animPath" == 0
+				continue
+			endif
+
+			; Load anim parameters
+			sAnimPath = aEntry["animPath"]
+			fAnimDelay = 0
+			if eval ar_HasKey aEntry "animDelay"
+				fAnimDelay = aEntry["animDelay"]
+			endif
+			iHideHUD = 0
+			if eval ar_HasKey aEntry "hideHUD"
+				iHideHUD = aEntry["hideHUD"]
+			endif
+			iDisableControlFlags = 0
+			if eval ar_HasKey aEntry "disableControlFlags"
+				iDisableControlFlags = aEntry["disableControlFlags"]
+			endif
+
+			; Load IMOD triggers
+			if eval ar_HasKey aEntry "imod" && (iSizeTrigger = ar_Size (aEntry["imod"])) > 0
+				while (iSizeTrigger -= 1) > -1
+					if eval IsFormValid (rTemp = EditorIDToFormID (aEntry["imod"][iSizeTrigger])) == 0
+						continue
+					endif
+					if eval AuxVarSize "*AnimMomentTrigger_0" rTemp == 0
+						SetEventHandler "OnApplyIMOD" (CompileScript "AnimatedMoments\IMOD.gek") "first"::rTemp
+					endif
+					AuxVarSetStr "*AnimMomentTrigger_0" (sAnimPath) 0 rTemp
+					AuxVarSetFlt "*AnimMomentTrigger_0" fAnimDelay 1 rTemp
+					AuxVarSetFlt "*AnimMomentTrigger_0" iHideHUD 2 rTemp
+					AuxVarSetFlt "*AnimMomentTrigger_0" iDisableControlFlags 3 rTemp
+				loop
+			endif
+
+			; Load quest triggers
+			if eval ar_HasKey aEntry "quest" && (ar_Size (aEntry["quest"])) > 0
+				foreach aForE2 <- aEntry["quest"]
+					if eval IsFormValid (rTemp = EditorIDToFormID (aForE2["value"]["id"])) == 0
+						continue
+					endif
+					iQuestStage = aForE2["value"]["stage"]
+					if eval AuxVarSize ("*AnimMomentTrigger_" + $iQuestStage) rTemp == 0
+						SetOnQuestStageEventHandler (CompileScript "AnimatedMoments\QuestStage.gek") 1 rTemp iQuestStage
+					endif
+					AuxVarSetStr ("*AnimMomentTrigger_" + $iQuestStage) (sAnimPath) 0 rTemp
+					AuxVarSetFlt ("*AnimMomentTrigger_" + $iQuestStage) fAnimDelay 1 rTemp
+					AuxVarSetFlt ("*AnimMomentTrigger_" + $iQuestStage) iHideHUD 2 rTemp
+					AuxVarSetFlt ("*AnimMomentTrigger_" + $iQuestStage) iDisableControlFlags 3 rTemp
+				loop
+			endif
+
+		loop
+	loop
+endif
+
+aFiles = aJSON = aEntry = aForE1 = aForE2 = ar_Null
+sv_Destruct sJSONPath sAnimPath
