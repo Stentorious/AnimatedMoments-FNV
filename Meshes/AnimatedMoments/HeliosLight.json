@@ -1,0 +1,9 @@
+[
+	{
+		"imod" : [ "HeliosLightFX" ],
+		"animPath" : "Hitman/VaultExit.kf",
+		"animDelay" : 0.3,
+		"hideHUD": 1,
+		"disableControlFlags" : 32148
+	}
+]
