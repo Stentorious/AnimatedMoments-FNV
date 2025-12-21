@@ -1,0 +1,13 @@
+[
+	{
+		"imod" : [ "NVDLC04WastelandNukeISFX" ],
+		"animPath" : "Hitman/ExplosionReaction.kf",
+		"animDelay" : 0,
+		"hideHUD": 1,
+		"disableControlFlags" : 32148,
+		"cameraShake": {
+			"strength": 0.1,
+			"duration": 6
+		}
+	}
+]

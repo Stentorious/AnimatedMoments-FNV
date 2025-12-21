@@ -1,0 +1,13 @@
+[
+	{
+		"imod" : [ "MegatonNukeISFX" ],
+		"animPath" : "Hitman/ExplosionReaction.kf",
+		"animDelay" : 4.9,
+		"hideHUD": 1,
+		"disableControlFlags" : 32148,
+		"cameraShake": {
+			"strength": 0.5,
+			"duration": 6
+		}
+	}
+]
