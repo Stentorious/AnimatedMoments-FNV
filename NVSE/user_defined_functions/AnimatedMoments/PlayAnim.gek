@@ -21,9 +21,6 @@ begin Function {rRef, sAux}
 	endif
 
 	; Queue animations
-	CallAfter (AuxVarGetFlt (sAux) 1 rRef) (begin function {}
-		Player.PlayAnimationPath ("AnimatedMoments\" + (AuxVarGetStr (Goo1.AuxVarGetStr "*AnimMoment" 1) 0 (Goo1.AuxVarGetRef "*AnimMoment" 0))) 1
-		CallWhen (CompileScript "AnimatedMoments\AnimReset.gek") ({} => Player.IsAnimSequencePlaying ("AnimatedMoments\" + (AuxVarGetStr (Goo1.AuxVarGetStr "*AnimMoment" 1) 0 (Goo1.AuxVarGetRef "*AnimMoment" 0))) == 0) 20
-	end)
+	CallAfter (AuxVarGetFlt (sAux) 1 rRef) (CompileScript "AnimatedMoments\PlayAnimQueue.gek")
 
 end

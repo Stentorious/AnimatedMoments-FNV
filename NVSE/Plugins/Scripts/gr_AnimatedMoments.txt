@@ -29,6 +29,8 @@ int iQuestStage
 int iHideHUD
 int iDisableControlFlags
 float fAnimDelay
+float fCameraShakeStr
+float fCameraShakeDur
 ref rTemp
 array_var aJSON
 array_var aEntry
@@ -61,17 +63,31 @@ if eval (iSize = ar_Size aFiles) > 0
 
 			; Load anim parameters
 			sAnimPath = aEntry["animPath"]
+
+			; Anim delay
 			fAnimDelay = 0
 			if eval ar_HasKey aEntry "animDelay"
 				fAnimDelay = aEntry["animDelay"]
 			endif
+
+			; Toggle HUD
 			iHideHUD = 0
 			if eval ar_HasKey aEntry "hideHUD"
 				iHideHUD = aEntry["hideHUD"]
 			endif
+
+			; Player control flags
 			iDisableControlFlags = 0
 			if eval ar_HasKey aEntry "disableControlFlags"
 				iDisableControlFlags = aEntry["disableControlFlags"]
+			endif
+
+			; Camera shake
+			fCameraShakeStr = 0
+			fCameraShakeDur = 0
+			if eval ar_HasKey aEntry "cameraShake" && ar_HasKey aEntry["cameraShake"] "strength" && ar_HasKey aEntry["cameraShake"] "duration"
+				fCameraShakeStr = aEntry["cameraShake"]["strength"]
+				fCameraShakeDur = aEntry["cameraShake"]["duration"]
 			endif
 
 			; Load IMOD triggers
@@ -81,12 +97,14 @@ if eval (iSize = ar_Size aFiles) > 0
 						continue
 					endif
 					if eval AuxVarSize "*AnimMomentTrigger_0" rTemp == 0
-						SetEventHandler "OnApplyIMOD" (CompileScript "AnimatedMoments\IMOD.gek") "first"::rTemp
+						SetEventHandler "OnApplyIMOD" (CompileScript "AnimatedMoments\TriggerIMOD.gek") "first"::rTemp
 					endif
 					AuxVarSetStr "*AnimMomentTrigger_0" (sAnimPath) 0 rTemp
 					AuxVarSetFlt "*AnimMomentTrigger_0" fAnimDelay 1 rTemp
 					AuxVarSetFlt "*AnimMomentTrigger_0" iHideHUD 2 rTemp
 					AuxVarSetFlt "*AnimMomentTrigger_0" iDisableControlFlags 3 rTemp
+					AuxVarSetFlt "*AnimMomentTrigger_0" fCameraShakeStr 4 rTemp
+					AuxVarSetFlt "*AnimMomentTrigger_0" fCameraShakeDur 5 rTemp
 				loop
 			endif
 
@@ -98,12 +116,15 @@ if eval (iSize = ar_Size aFiles) > 0
 					endif
 					iQuestStage = aForE2["value"]["stage"]
 					if eval AuxVarSize ("*AnimMomentTrigger_" + $iQuestStage) rTemp == 0
-						SetOnQuestStageEventHandler (CompileScript "AnimatedMoments\QuestStage.gek") 1 rTemp iQuestStage
+						SetOnQuestStageEventHandler (CompileScript "AnimatedMoments\TriggerQuestStage.gek") 1 rTemp iQuestStage
 					endif
 					AuxVarSetStr ("*AnimMomentTrigger_" + $iQuestStage) (sAnimPath) 0 rTemp
 					AuxVarSetFlt ("*AnimMomentTrigger_" + $iQuestStage) fAnimDelay 1 rTemp
 					AuxVarSetFlt ("*AnimMomentTrigger_" + $iQuestStage) iHideHUD 2 rTemp
 					AuxVarSetFlt ("*AnimMomentTrigger_" + $iQuestStage) iDisableControlFlags 3 rTemp
+					AuxVarSetFlt ("*AnimMomentTrigger_" + $iQuestStage) fCameraShakeStr 4 rTemp
+					AuxVarSetFlt ("*AnimMomentTrigger_" + $iQuestStage) fCameraShakeDur 5 rTemp
+
 				loop
 			endif
 

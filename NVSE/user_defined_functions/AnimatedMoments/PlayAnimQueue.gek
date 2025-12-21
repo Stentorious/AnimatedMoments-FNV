@@ -1,0 +1,19 @@
+float fCameraShake
+ref rRef
+string_var sAux
+
+begin function {}
+
+	rRef = Goo1.AuxVarGetRef "*AnimMoment" 0
+	sAux = Goo1.AuxVarGetStr "*AnimMoment" 1
+
+	Player.PlayAnimationPath ("AnimatedMoments\" + (AuxVarGetStr (sAux) 0 rRef)) 1
+
+	; Play camera shake
+	if eval (fCameraShake = AuxVarGetFlt (sAux) 4 rRef) > 0
+		SetCameraShake fCameraShake (AuxVarGetFlt (sAux) 5 rRef)
+	endif
+
+	CallWhen (CompileScript "AnimatedMoments\AnimReset.gek") ({} => Player.IsAnimSequencePlaying ("AnimatedMoments\" + (AuxVarGetStr (Goo1.AuxVarGetStr "*AnimMoment" 1) 0 (Goo1.AuxVarGetRef "*AnimMoment" 0))) == 0) 20
+
+end
