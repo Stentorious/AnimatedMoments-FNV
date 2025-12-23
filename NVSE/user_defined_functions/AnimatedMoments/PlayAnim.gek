@@ -23,4 +23,6 @@ begin Function {rRef, sAux}
 	; Queue animations
 	CallAfter (AuxVarGetFlt (sAux) 1 rRef) (CompileScript "AnimatedMoments\PlayAnimQueue.gek")
 
+	sv_Destruct sAux
+
 end

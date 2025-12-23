@@ -16,4 +16,6 @@ begin function {}
 
 	CallWhen (CompileScript "AnimatedMoments\AnimReset.gek") ({} => Player.IsAnimSequencePlaying ("AnimatedMoments\" + (AuxVarGetStr (Goo1.AuxVarGetStr "*AnimMoment" 1) 0 (Goo1.AuxVarGetRef "*AnimMoment" 0))) == 0) 20
 
+	sv_Destruct sAux
+
 end
