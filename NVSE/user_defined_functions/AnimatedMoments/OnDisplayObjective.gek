@@ -1,0 +1,6 @@
+ref rQuest
+int iIndex
+
+begin Function {rQuest, iIndex}
+	Call (CompileScript "AnimatedMoments\PlayAnim.gek") rQuest ("*AnimMom_4_" + $iIndex)
+end

@@ -23,21 +23,24 @@ if GetPluginVersion "lStewieAl's Tweaks" < 906
 endif
 
 ; Load anim triggers
+int iType
 int iSize
-int iSizeTrigger
-int iQuestStage
+int iIndex
 int iHideHUD
 int iDisableControlFlags
 float fAnimDelay
 float fCameraShakeStr
 float fCameraShakeDur
-ref rTemp
+ref rFirst
+ref rSecond
 array_var aJSON
 array_var aEntry
 array_var aForE1
 array_var aForE2
 string_var sJSONPath
 string_var sAnimPath
+string_var sType
+string_var sAux
 
 array_var aFiles = GetFiles "Meshes\AnimatedMoments" "*.json"
 
@@ -57,7 +60,33 @@ if eval (iSize = ar_Size aFiles) > 0
 
 			aEntry = *aForE1
 
+			; Had valid animation path
 			if eval ar_HasKey aEntry "animPath" == 0
+				continue
+			endif
+
+			; Trigger type
+			if eval ar_HasKey aEntry "imod"
+				iType = 1
+				sType = "imod"
+			elseif eval ar_HasKey aEntry "questStage"
+				iType = 2
+				sType = "questStage"
+			elseif eval ar_HasKey aEntry "questObjComplete"
+				iType = 3
+				sType = "questObjComplete"
+			elseif eval ar_HasKey aEntry "questObjDisplay"
+				iType = 4
+				sType = "questObjDisplay"
+			elseif eval ar_HasKey aEntry "packageStart"
+				iType = 5
+				sType = "packageStart"
+			else
+				continue
+			endif
+
+			; Trigger has entries
+			if eval (ar_Size (aEntry[(sType)])) < 1
 				continue
 			endif
 
@@ -90,47 +119,53 @@ if eval (iSize = ar_Size aFiles) > 0
 				fCameraShakeDur = aEntry["cameraShake"]["duration"]
 			endif
 
-			; Load IMOD triggers
-			if eval ar_HasKey aEntry "imod" && (iSizeTrigger = ar_Size (aEntry["imod"])) > 0
-				while (iSizeTrigger -= 1) > -1
-					if eval IsFormValid (rTemp = EditorIDToFormID (aEntry["imod"][iSizeTrigger])) == 0
+			foreach aForE2 <- aEntry[(sType)]
+
+				; Validate form
+				if eval iType == 1
+					rFirst = EditorIDToFormID (*aForE2)
+					sAux = sv_Construct "*AnimMom_%g" iType
+				elseif eval iType == 5
+					rFirst = EditorIDToFormID (aForE2["value"]["actor"])
+					rSecond = EditorIDToFormID (aForE2["value"]["package"])
+					if eval IsFormValid rSecond == 0
 						continue
 					endif
-					if eval AuxVarSize "*AnimMomentTrigger_0" rTemp == 0
-						SetEventHandler "OnApplyIMOD" (CompileScript "AnimatedMoments\TriggerIMOD.gek") "first"::rTemp
-					endif
-					AuxVarSetStr "*AnimMomentTrigger_0" (sAnimPath) 0 rTemp
-					AuxVarSetFlt "*AnimMomentTrigger_0" fAnimDelay 1 rTemp
-					AuxVarSetFlt "*AnimMomentTrigger_0" iHideHUD 2 rTemp
-					AuxVarSetFlt "*AnimMomentTrigger_0" iDisableControlFlags 3 rTemp
-					AuxVarSetFlt "*AnimMomentTrigger_0" fCameraShakeStr 4 rTemp
-					AuxVarSetFlt "*AnimMomentTrigger_0" fCameraShakeDur 5 rTemp
-				loop
-			endif
+					sAux = sv_Construct "*AnimMom_%g_%z" iType (aForE2["value"]["package"])
+				else
+					rFirst = EditorIDToFormID (aForE2["value"]["quest"])
+					iIndex = aForE2["value"]["index"]
+					sAux = sv_Construct "*AnimMom_%g_%g" iType iIndex
+				endif
+				if eval IsFormValid rFirst == 0 || AuxVarSize (sAux) rFirst > 0
+					continue
+				endif
 
-			; Load quest triggers
-			if eval ar_HasKey aEntry "quest" && (ar_Size (aEntry["quest"])) > 0
-				foreach aForE2 <- aEntry["quest"]
-					if eval IsFormValid (rTemp = EditorIDToFormID (aForE2["value"]["id"])) == 0
-						continue
-					endif
-					iQuestStage = aForE2["value"]["stage"]
-					if eval AuxVarSize ("*AnimMomentTrigger_" + $iQuestStage) rTemp == 0
-						SetOnQuestStageEventHandler (CompileScript "AnimatedMoments\TriggerQuestStage.gek") 1 rTemp iQuestStage
-					endif
-					AuxVarSetStr ("*AnimMomentTrigger_" + $iQuestStage) (sAnimPath) 0 rTemp
-					AuxVarSetFlt ("*AnimMomentTrigger_" + $iQuestStage) fAnimDelay 1 rTemp
-					AuxVarSetFlt ("*AnimMomentTrigger_" + $iQuestStage) iHideHUD 2 rTemp
-					AuxVarSetFlt ("*AnimMomentTrigger_" + $iQuestStage) iDisableControlFlags 3 rTemp
-					AuxVarSetFlt ("*AnimMomentTrigger_" + $iQuestStage) fCameraShakeStr 4 rTemp
-					AuxVarSetFlt ("*AnimMomentTrigger_" + $iQuestStage) fCameraShakeDur 5 rTemp
+				; Set event handlers
+				if eval iType == 1
+					SetEventHandler "OnApplyIMOD" (CompileScript "AnimatedMoments\OnApplyIMOD.gek") "first"::rFirst
+				elseif eval iType == 2
+					SetOnQuestStageEventHandler (CompileScript "AnimatedMoments\OnQuestStage.gek") 1 rFirst iIndex
+				elseif eval iType == 3
+					SetEventHandler "ShowOff:OnCompleteObjective" (CompileScript "AnimatedMoments\OnCompleteObjective.gek") "first"::rFirst "second"::iIndex
+				elseif eval iType == 4
+					SetEventHandler "ShowOff:OnDisplayObjective" (CompileScript "AnimatedMoments\OnDisplayObjective.gek") "first"::rFirst "second"::iIndex
+				elseif eval iType == 5
+					SetEventHandler "OnPackageStart" (CompileScript "AnimatedMoments\OnPackageStart.gek") "first"::rFirst "second"::rSecond
+				endif
 
-				loop
-			endif
+				; Set Aux
+				AuxVarSetStr (sAux) (sAnimPath) 0 rFirst
+				AuxVarSetFlt (sAux) fAnimDelay 1 rFirst
+				AuxVarSetFlt (sAux) iHideHUD 2 rFirst
+				AuxVarSetFlt (sAux) iDisableControlFlags 3 rFirst
+				AuxVarSetFlt (sAux) fCameraShakeStr 4 rFirst
+				AuxVarSetFlt (sAux) fCameraShakeDur 5 rFirst
 
+			loop
 		loop
 	loop
 endif
 
 aFiles = aJSON = aEntry = aForE1 = aForE2 = ar_Null
-sv_Destruct sJSONPath sAnimPath
+sv_Destruct sJSONPath sAnimPath sType sAux

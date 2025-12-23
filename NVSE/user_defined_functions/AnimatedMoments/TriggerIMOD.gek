@@ -1,5 +1,0 @@
-ref rIMODRef
-
-begin Function {rIMODRef}
-	Call (CompileScript "AnimatedMoments\PlayAnim.gek") rIMODRef "*AnimMomentTrigger_0"
-end

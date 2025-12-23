@@ -1,0 +1,6 @@
+ref rActor
+ref rPackage
+
+begin Function {rActor, rPackage}
+	Call (CompileScript "AnimatedMoments\PlayAnim.gek") rActor ("*AnimMom_5_" + (GetEditorID rPackage))
+end
