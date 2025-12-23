@@ -1,0 +1,32 @@
+[
+	{
+		"packageStart" : [
+			{
+				"actor": "CraigBooneREF",
+				"package": "VNovacBooneRevengeAliceMcbride"
+			},
+			{
+				"actor": "CraigBooneREF",
+				"package": "VNovacBooneRevengeCliff"
+			},
+			{
+				"actor": "CraigBooneREF",
+				"package": "VNovacBooneRevengeDustyMcBride"
+			},
+			{
+				"actor": "CraigBooneREF",
+				"package": "VNovacBooneRevengeManny"
+			},
+			{
+				"actor": "CraigBooneREF",
+				"package": "VNovacBooneRevengeNobark"
+			},
+			{
+				"actor": "CraigBooneREF",
+				"package": "VNovacBooneRevengeRangerAndy"
+			}
+		],
+		"animPath" : "Hitman/MarkTarget.kf",
+		"animDelay" : 1.2
+	}
+]
