@@ -81,6 +81,12 @@ if eval (iSize = ar_Size aFiles) > 0
 			elseif eval ar_HasKey aEntry "packageStart"
 				iType = 5
 				sType = "packageStart"
+			elseif eval ar_HasKey aEntry "enable"
+				iType = 6
+				sType = "enable"
+			elseif eval ar_HasKey aEntry "disable"
+				iType = 7
+				sType = "disable"
 			else
 				continue
 			endif
@@ -122,7 +128,7 @@ if eval (iSize = ar_Size aFiles) > 0
 			foreach aForE2 <- aEntry[(sType)]
 
 				; Validate form
-				if eval iType == 1
+				if eval iType == 1 || iType == 6 || iType == 7
 					rFirst = EditorIDToFormID (*aForE2)
 					sAux = sv_Construct "*AnimMom_%g" iType
 				elseif eval iType == 5
@@ -152,6 +158,10 @@ if eval (iSize = ar_Size aFiles) > 0
 					SetEventHandler "ShowOff:OnDisplayObjective" (CompileScript "AnimatedMoments\OnDisplayObjective.gek") "first"::rFirst "second"::iIndex
 				elseif eval iType == 5
 					SetEventHandler "OnPackageStart" (CompileScript "AnimatedMoments\OnPackageStart.gek") "first"::rFirst "second"::rSecond
+				elseif eval iType == 6
+					SetEventHandler "OnEnable" (CompileScript "AnimatedMoments\OnEnable.gek") "first"::rFirst
+				elseif eval iType == 7
+					SetEventHandler "OnDisable" (CompileScript "AnimatedMoments\OnDisable.gek") "first"::rFirst
 				endif
 
 				; Set Aux

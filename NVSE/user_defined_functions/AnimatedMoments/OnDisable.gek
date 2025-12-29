@@ -1,0 +1,5 @@
+ref rRef
+
+begin Function {rRef}
+	Call (CompileScript "AnimatedMoments\PlayAnim.gek") rRef "*AnimMom_7"
+end
