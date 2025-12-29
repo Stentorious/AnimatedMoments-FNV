@@ -1,0 +1,7 @@
+[
+	{
+		"disable" : [ "FxFlashGrenade01" ],
+		"animPath" : "Hitman/ExplosionReaction.kf",
+		"animDelay" : 0
+	}
+]
