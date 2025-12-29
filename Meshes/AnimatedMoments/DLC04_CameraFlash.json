@@ -1,0 +1,8 @@
+[
+	{
+		"imod" : [ "DLC04CameraFlashISFX" ],
+		"animPath" : "Hitman/ExplosionReaction.kf",
+		"animDelay" : 1.2,
+		"disableControlFlags" : 32148
+	}
+]
