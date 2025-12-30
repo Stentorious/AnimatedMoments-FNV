@@ -1,6 +1,6 @@
 [
 	{
-		"imod" : [ "CGCameraFlashISFX" ],
+		"imod" : [ "CGCameraFlashISFX", "ExplosionInFace" ],
 		"animPath" : "Hitman/ExplosionReaction.kf",
 		"animDelay" : 0,
 		"disableControlFlags" : 32148
